@@ -68,7 +68,12 @@ endif
 # Processes
 #------------------------------
 
-all: dir $(PROGRAM)
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJS)
+	$(AR) $(ARFLAGS) $(PROGRAM) $(OBJS)
+
+$(OBJS): dir
 
 dir: $(TARGETDIR) $(OBJDIRS)
 
@@ -78,9 +83,6 @@ ifeq ($(ENV),Windows)
 else
 	@[ -d $@ ] || mkdir $@
 endif
-
-$(PROGRAM): $(OBJS)
-	$(AR) $(ARFLAGS) $(PROGRAM) $(OBJS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $<
