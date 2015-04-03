@@ -22,10 +22,8 @@ DEPSUFFIX = %.d
 #------------------------------
 # Commands and Options
 #------------------------------
-MKDIR = mkdir -p
 RM = rm -rf
 ifeq ($(ENV),Windows)
-  MKDIR = mkdir
   RM = rmdir /q /s
 endif
 
@@ -58,15 +56,9 @@ DEPS =  $(patsubst $(OBJSUFFIX),$(DEPSUFFIX),$(OBJS))
 OBJDIRS = $(sort $(dir $(OBJS)))
 
 ifeq ($(ENV),Windows)
-  MKTARGETDIR = $(MKDIR) $(subst /,\,$(TARGETDIR))
-  MKOBJDIRS   = $(MKDIR) $(subst /,\,$(OBJDIRS))
-
   RMPROGRAM = $(RM) $(subst /,\,$(TARGETDIR))
   RMOBJDIR  = $(RM) $(subst /,\,$(OBJDIR))
 else
-  MKTARGETDIR = $(MKDIR) $(TARGETDIR)
-  MKOBJDIRS   = $(MKDIR) $(OBJDIRS)
-
   RMPROGRAM = $(RM) $(PROGRAM)
   RMOBJDIR  = $(RM) $(OBJDIR)
 endif
@@ -76,14 +68,15 @@ endif
 # Processes
 #------------------------------
 
-all: create-dirs $(PROGRAM)
+all: dir $(PROGRAM)
 
-create-dirs:
-ifneq ($(TARGETDIR),)
-	@[ -d $(TARGETDIR) ] || $(MKTARGETDIR)
-endif
-ifneq ($(OBJDIRS),)
-	@[ -d "$(OBJDIRS)" ] || $(MKOBJDIRS)
+dir: $(TARGETDIR) $(OBJDIRS)
+
+$(TARGETDIR) $(OBJDIRS):
+ifeq ($(ENV),Windows)
+	@[ -d $@ ] || mkdir $(subst /,\,$@)
+else
+	@[ -d $@ ] || mkdir $@
 endif
 
 $(PROGRAM): $(OBJS)
@@ -116,7 +109,6 @@ check-vars:
 	@echo OBJSUFFIX   = $(OBJSUFFIX)
 	@echo DEPSUFFIX   = $(DEPSUFFIX)
 
-	@echo MKDIR       = $(MKDIR)
 	@echo RM          = $(RM)
 
 	@echo CC          = $(CC)
@@ -134,8 +126,6 @@ check-vars:
 
 	@echo OBJDIRS     = $(OBJDIRS)
 
-	@echo MKTARGETDIR = $(MKTARGETDIR)
-	@echo MKOBJDIRS   = $(MKOBJDIRS)
 	@echo RMPROGRAM   = $(RMPROGRAM)
 	@echo RMOBJDIR    = $(RMOBJDIR)
 
