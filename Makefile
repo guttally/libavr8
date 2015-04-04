@@ -23,9 +23,6 @@ DEPSUFFIX = %.d
 # Commands and Options
 #------------------------------
 RM = rm -rf
-ifeq ($(ENV),Windows)
-  RM = rmdir /q /s
-endif
 
 CC = avr-gcc
 CFLAGS = -Wextra -Wall -O2 -MMD -MP -c -DCOMPILING_LIBAVR8_
@@ -55,14 +52,6 @@ DEPS =  $(patsubst $(OBJSUFFIX),$(DEPSUFFIX),$(OBJS))
 
 OBJDIRS = $(sort $(dir $(OBJS)))
 
-ifeq ($(ENV),Windows)
-  RMPROGRAM = $(RM) $(subst /,\,$(TARGETDIR))
-  RMOBJDIR  = $(RM) $(subst /,\,$(OBJDIR))
-else
-  RMPROGRAM = $(RM) $(PROGRAM)
-  RMOBJDIR  = $(RM) $(OBJDIR)
-endif
-
 
 #------------------------------
 # Processes
@@ -88,8 +77,20 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $<
 
 clean:
-	@$(RMPROGRAM)
-	@$(RMOBJDIR)
+ifneq ($(TARGETDIR),./)
+ifeq ($(ENV),Windows)
+	@$(RM) $(subst /,\,$(TARGETDIR))
+else
+	@$(RM) $(TARGETDIR)
+endif
+endif
+
+ifeq ($(ENV),Windows)
+	@$(RM) $(subst /,\,$(OBJDIR))
+else
+	@$(RM) $(OBJDIR)
+endif
+
 
 #------------------------------
 # Check variables
