@@ -23,29 +23,27 @@
 #ifndef LIBAVR8_UART_H_
 #define LIBAVR8_UART_H_
 
+#include <stdint.h>
+
 #define LIBAVR8_UART_H_DEVICE_SPECIFIC_
 #if defined(__AVR_ATmega328P__)
 #  include <libavr8/devices/ATmega328P/uart.h>
 #endif
 #undef  LIBAVR8_UART_H_DEVICE_SPECIFIC_
 
-#if !defined(COMPILING_LIBAVR8_)
-
-#if defined(UartSetBaud_DS)
+#if !defined(COMPILING_LIBAVR8_) && defined(UartSetBaud_DS)
 static inline void UartSetBaud(int32_t cpu_freq, int32_t baud, bool double_speed) {
   UartSetBaud_DS(cpu_freq, baud, double_speed);
 }
-#undef   UartSetBaud_DS
-#endif //UartSetBaud_DS
+#undef UartSetBaud_DS
+#endif
 
-#if defined(UartSetFormat_DS)
+#if !defined(COMPILING_LIBAVR8_) && defined(UartSetFormat_DS)
 static inline void UartSetFormat(UsartCharSize char_size, UsartParity parity,
                          UsartStopBit stop_bit) {
   UartSetFormat_DS(char_size, parity, stop_bit);
 }
-#undef   UartSetFormat_DS
-#endif //UartSetFormat_DS
-
-#endif // !COMPILING_LIBAVR8_
+#undef UartSetFormat_DS
+#endif
 
 #endif//LIBAVR8_UART_H_
