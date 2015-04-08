@@ -29,8 +29,13 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <libavr8/usart_types.h>
 
 void UartSetBaud_m328p(int32_t cpu_freq, int32_t baud, bool double_speed);
 #define UartSetBaud_DS UartSetBaud_m328p
+
+void UartSetFormat_m328p(UsartCharSize char_size, UsartParity parity,
+                         UsartStopBit stop_bit);
+#define UartSetFormat_DS UartSetFormat_m328p
 
 #endif//LIBAVR8_DEVICES_ATMEGA328P_UART_H_

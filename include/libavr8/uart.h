@@ -38,6 +38,14 @@ static inline void UartSetBaud(int32_t cpu_freq, int32_t baud, bool double_speed
 #undef   UartSetBaud_DS
 #endif //UartSetBaud_DS
 
+#if defined(UartSetFormat_DS)
+static inline void UartSetFormat(UsartCharSize char_size, UsartParity parity,
+                         UsartStopBit stop_bit) {
+  UartSetFormat_DS(char_size, parity, stop_bit);
+}
+#undef   UartSetFormat_DS
+#endif //UartSetFormat_DS
+
 #endif // !COMPILING_LIBAVR8_
 
 #endif//LIBAVR8_UART_H_

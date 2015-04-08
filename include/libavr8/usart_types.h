@@ -20,30 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#define __AVR_ATmega328P__
+#ifndef LIBAVR8_USART_TYPES_H_
+#define LIBAVR8_USART_TYPES_H_
 
-#include <avr/io.h>
-#include <libavr8/uart.h>
-#include <libavr8/util/bitope.h>
+typedef enum {
+  UsartCharSize5 = 0,
+  UsartCharSize6 = 1,
+  UsartCharSize7 = 2,
+  UsartCharSize8 = 3
+} UsartCharSize;
 
-void UartSetBaud_m328p(int32_t cpu_freq, int32_t baud, bool double_speed) {
-  UCSR0C = SetMaskedBits8(UCSR0C, 0x3 << UMSEL00, 0);
+typedef enum {
+  UsartParityNone = 0,
+  UsartParityEven = 2,
+  UsartParityOdd  = 3
+} UsartParity;
 
-  int8_t scale = 4 - (int8_t)double_speed;
-  int32_t scaled_baud = baud << scale;
-  uint16_t ubr = ((cpu_freq + (scaled_baud >> 1)) / scaled_baud) - 1;
+typedef enum {
+  UsartStopBit1 = 0,
+  UsartStopBit2 = 1
+} UsartStopBit;
 
-  UBRR0 = ubr;
-  UCSR0A = SetBit8(UCSR0A, U2X0, double_speed);
-}
-
-void UartSetFormat_m328p(UsartCharSize char_size, UsartParity parity,
-                         UsartStopBit stop_bit) {
-  UCSR0B = SetBit8(UCSR0B, UCSZ02, false);
-  
-  uint8_t val = ((char_size & 0x3) << UCSZ00)
-              | ((parity    & 0x3) << UPM00)
-              | ((stop_bit  & 0x1) << USBS0);
-  uint8_t mask = (0x3 << UCSZ00) | (0x3 << UPM00) | (0x1 << USBS0);
-  UCSR0C = SetMaskedBits8(UCSR0C, mask, val);
-}
+#endif//LIBAVR8_USART_TYPES_H_
