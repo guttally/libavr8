@@ -20,29 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef LIBAVR8_DEVICES_ATMEGA328P_UART_H_
-#define LIBAVR8_DEVICES_ATMEGA328P_UART_H_
+#ifndef SRC_UART_UARTTX_H_
+#define SRC_UART_UARTTX_H_
 
-#if !defined(LIBAVR8_UART_H_DEVICE_SPECIFIC_)
-#  error "Include <libavr8/uart.h> instead of this file."
-#endif
+#include "../util/ringbuf.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <libavr8/usart_types.h>
+extern TinyRingBuf txbuf;
 
-void UartSetBaud_m328p(int32_t cpu_freq, int32_t baud, bool double_speed);
-#define UartSetBaud_DS UartSetBaud_m328p
-
-void UartSetFormat_m328p(UsartCharSize char_size, UsartParity parity,
-                         UsartStopBit stop_bit);
-#define UartSetFormat_DS UartSetFormat_m328p
-
-
-int UartSend_m328p(const void *dat, int offset, int len);
-#define UartSend_DS UartSend_m328p
-
-void UartSend_ISR_USART_UDRE_m328p(void);
-#define UartSend_ISR_USART_UDRE_DS UartSend_ISR_USART_UDRE_m328p
-
-#endif//LIBAVR8_DEVICES_ATMEGA328P_UART_H_
+#endif//SRC_UART_UARTTX_H_

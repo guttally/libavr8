@@ -46,4 +46,20 @@ static inline void UartSetFormat(UsartCharSize char_size, UsartParity parity,
 #undef UartSetFormat_DS
 #endif
 
+void UartInitTx(void *buf, uint8_t buf_size);
+
+#if !defined(COMPILING_LIBAVR8_) && defined(UartSend_DS)
+static inline int UartSend(const void *dat, int offset, int len) {
+  return UartSend_DS(dat, offset, len);
+}
+#undef UartSend_DS
+#endif
+
+#if !defined(COMPILING_LIBAVR8_) && defined(UartSend_ISR_USART_UDRE_DS)
+static inline void UartSend_ISR_USART_UDRE(void) {
+  UartSend_ISR_USART_UDRE_DS();
+}
+#undef UartSend_DS
+#endif
+
 #endif//LIBAVR8_UART_H_

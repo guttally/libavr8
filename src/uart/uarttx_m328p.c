@@ -20,29 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef LIBAVR8_DEVICES_ATMEGA328P_UART_H_
-#define LIBAVR8_DEVICES_ATMEGA328P_UART_H_
+#define __AVR_ATmega328P__
 
-#if !defined(LIBAVR8_UART_H_DEVICE_SPECIFIC_)
-#  error "Include <libavr8/uart.h> instead of this file."
-#endif
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <libavr8/uart.h>
+#include <libavr8/util/bitope.h>
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <libavr8/usart_types.h>
+#include "uarttx.h"
 
-void UartSetBaud_m328p(int32_t cpu_freq, int32_t baud, bool double_speed);
-#define UartSetBaud_DS UartSetBaud_m328p
+int UartSend_m328p(const void *dat, int offset, int len) {
+  UCSR0B = SetBit8(UCSR0B, TXEN0, true);
+  int ret = TinyRingBufPush(&txbuf, dat, offset, len);
+  if (ret > 0) {
+    UCSR0B = SetBit8(UCSR0B, UDRIE0, true);
+  }
+  return ret;
+}
 
-void UartSetFormat_m328p(UsartCharSize char_size, UsartParity parity,
-                         UsartStopBit stop_bit);
-#define UartSetFormat_DS UartSetFormat_m328p
-
-
-int UartSend_m328p(const void *dat, int offset, int len);
-#define UartSend_DS UartSend_m328p
-
-void UartSend_ISR_USART_UDRE_m328p(void);
-#define UartSend_ISR_USART_UDRE_DS UartSend_ISR_USART_UDRE_m328p
-
-#endif//LIBAVR8_DEVICES_ATMEGA328P_UART_H_
+void UartSend_ISR_USART_UDRE_m328p(void) {
+  if (!TinyRingBufIsEmpty(&txbuf)) {
+    UDR0 = TinyRingBufPop(&txbuf);
+  }
+  if (TinyRingBufIsEmpty(&txbuf)) {
+//    UCSR0B = SetBit8(UCSR0B, UDRIE0, false);
+  }
+}
